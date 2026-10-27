@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>TEKZITHON 2027 — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#05080f;--card:#0c1428;--line:rgba(120,200,255,.18);--cyan:#22d3ee;--violet:#8b5cf6;--orange:#fb923c;--text:#e6edf7;--mute:#8fa1bd;--ok:#34d399;--bad:#f87171;--hd:'Space Grotesk',sans-serif;--bd:'Inter',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font:15px/1.55 var(--bd);min-height:100vh}
+h1,h2,h3{font-family:var(--hd)}
+button,input,select,textarea{font:inherit;color:var(--text)}
+input,select,textarea{width:100%;min-height:42px;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:#060b18;font-size:16px}
+textarea{min-height:110px;resize:vertical}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.btn{min-height:40px;padding:0 16px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.04);cursor:pointer;font-weight:600;white-space:nowrap}
+.btn:hover{border-color:var(--cyan)}.btn.p{background:linear-gradient(135deg,var(--cyan),var(--violet));border:0;color:#04101c}
+.btn.d{color:var(--bad);border-color:rgba(248,113,113,.4)}.btn.s{min-height:34px;padding:0 12px;font-size:.85rem}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.badge{display:inline-block;padding:3px 10px;border-radius:999px;font:600 .72rem var(--hd);border:1px solid var(--line)}
+.ok{color:var(--ok);border-color:rgba(52,211,153,.4)}.warn{color:var(--orange);border-color:rgba(251,146,60,.4)}.bad{color:var(--bad);border-color:rgba(248,113,113,.4)}.info{color:var(--cyan);border-color:rgba(34,211,238,.4)}
+#login{min-height:100vh;display:grid;place-items:center;padding:20px}
+#login .card{width:min(400px,100%)}
+#app{display:none;grid-template-columns:230px 1fr;min-height:100vh}
+aside{border-right:1px solid var(--line);padding:18px 12px;position:sticky;top:0;height:100vh;overflow-y:auto}
+aside h2{font-size:1rem;letter-spacing:.14em;color:var(--cyan);padding:0 10px 14px}
+aside button.nav{display:block;width:100%;text-align:left;padding:10px 12px;border-radius:10px;border:0;background:none;cursor:pointer;color:var(--mute)}
+aside button.nav.on,aside button.nav:hover{background:rgba(34,211,238,.1);color:var(--text)}
+main{padding:24px;min-width:0}
+.bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
+.bar input,.bar select{width:auto;flex:1 1 180px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.stat b{display:block;font:700 1.8rem var(--hd);color:var(--cyan)}.stat span{color:var(--mute);font-size:.8rem}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:620px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid rgba(120,200,255,.1);vertical-align:top;font-size:.9rem}
+th{font:600 .72rem var(--hd);letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fld{display:grid;gap:5px;margin-bottom:12px}.fld label{font-weight:600;font-size:.82rem}.fld small{color:var(--mute)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;place-items:center;padding:16px;z-index:50;overflow-y:auto}
+.modal.on{display:grid}.modal .card{width:min(640px,100%);max-height:92vh;overflow-y:auto}
+.empty{padding:30px;text-align:center;color:var(--mute);border:1px dashed var(--line);border-radius:12px}
+#toasts{position:fixed;right:14px;bottom:14px;display:grid;gap:8px;z-index:99}
+.toast{padding:11px 14px;border-radius:10px;background:#0c1428;border:1px solid var(--line)}.toast.err{border-color:var(--bad)}.toast.ok{border-color:var(--ok)}
+.pager{display:flex;gap:8px;align-items:center;margin-top:12px;color:var(--mute)}
+.pre{white-space:pre-wrap;background:#060b18;border:1px solid var(--line);border-radius:10px;padding:12px;margin:6px 0 12px}
+@media(max-width:800px){#app{grid-template-columns:1fr}aside{position:static;height:auto;display:flex;overflow-x:auto;gap:4px;padding:8px;border-right:0;border-bottom:1px solid var(--line)}aside h2{display:none}aside button.nav{width:auto;white-space:nowrap}.row2{grid-template-columns:1fr}main{padding:14px}}
+</style>
+</head>
+<body>
+<div id="login">
+  <form class="card" id="lf">
+    <h1 style="font-size:1.4rem;margin-bottom:6px">TEKZITHON Admin</h1>
+    <p style="color:var(--mute);margin-bottom:16px">Sign in with the admin password set on the server.</p>
+    <div class="fld"><label for="pw">Password</label><input id="pw" type="password" autocomplete="current-password" required></div>
+    <button class="btn p" style="width:100%" id="lb">Sign in</button>
+    <p id="lerr" style="color:var(--bad);margin-top:10px" role="alert"></p>
+  </form>
+</div>
+
+<div id="app">
+  <aside><h2>TEKZITHON</h2><div id="nav"></div><button class="btn s" style="margin:14px 10px 0" id="out">Sign out</button></aside>
+  <main><h1 id="ttl" style="margin-bottom:16px;font-size:1.5rem"></h1><div id="view"></div></main>
+</div>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true"><div class="card" id="mbox"></div></div>
+<div id="toasts"></div>
+
+<script>
+/* Same Apps Script Web App URL as index.html */
+const API_URL = '';
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let TOKEN = null; try { TOKEN = sessionStorage.getItem('tkz_tok'); } catch (e) {}
+function toast(m, t) { const d = document.createElement('div'); d.className = 'toast ' + (t || ''); d.textContent = m; $('#toasts').appendChild(d); setTimeout(() => d.remove(), 4500); }
+async function call(action, p) {
+  if (!API_URL) throw new Error('API_URL is not set in admin.html.');
+  const r = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(Object.assign({ action, token: TOKEN }, p || {})) });
+  const j = await r.json();
+  if (!j.ok) { if (/Session expired/.test(j.error)) logout(true); throw new Error(j.error || 'Request failed'); }
+  return j.data;
+}
+function logout(expired) { TOKEN = null; try { sessionStorage.removeItem('tkz_tok'); } catch (e) {} $('#app').style.display = 'none'; $('#login').style.display = 'grid'; if (expired) $('#lerr').textContent = 'Session expired. Please sign in again.'; }
+$('#out').onclick = () => logout();
+$('#lf').onsubmit = async e => {
+  e.preventDefault(); $('#lerr').textContent = ''; $('#lb').disabled = true;
+  try { const r = await call('adminLogin', { password: $('#pw').value }); TOKEN = r.token; try { sessionStorage.setItem('tkz_tok', TOKEN); } catch (x) {} $('#pw').value = ''; start(); }
+  catch (err) { $('#lerr').textContent = err.message; } finally { $('#lb').disabled = false; }
+};
+
+const PAGES = ['Dashboard', 'Abstracts', 'Registrations', 'Domains', 'Resources', 'Leaderboard', 'Announcements', 'Settings', 'Audit Log'];
+let page = 'Dashboard';
+function start() {
+  $('#login').style.display = 'none'; $('#app').style.display = 'grid';
+  $('#nav').innerHTML = PAGES.map(p => '<button class="nav" data-p="' + p + '">' + p + '</button>').join('');
+  go('Dashboard');
+}
+$('#nav').addEventListener('click', e => { const b = e.target.closest('[data-p]'); if (b) go(b.dataset.p); });
+async function go(p) {
+  page = p; $('#ttl').textContent = p; document.querySelectorAll('.nav').forEach(b => b.classList.toggle('on', b.dataset.p === p));
+  $('#view').innerHTML = '<div class="empty">Loading…</div>';
+  try { await ({ Dashboard: vDash, Abstracts: vAbs, Registrations: vReg, Domains: () => vCrud('Domains'), Resources: () => vCrud('Resources'), Leaderboard: () => vCrud('Leaderboard'), Announcements: () => vCrud('Announcements'), Settings: vSet, 'Audit Log': vAudit }[p])(); }
+  catch (e) { $('#view').innerHTML = '<div class="empty" role="alert">' + esc(e.message) + '</div>'; }
+}
+function confirmBox(msg) { return confirm(msg); }
+function openModal(html) { $('#mbox').innerHTML = html; $('#modal').classList.add('on'); }
+function closeModal() { $('#modal').classList.remove('on'); }
+$('#modal').addEventListener('click', e => { if (e.target.id === 'modal' || e.target.closest('[data-close]')) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+const stCls = s => ({ 'Shortlisted': 'ok', 'Not Shortlisted': 'bad', 'Pending Review': 'warn', 'Paid': 'ok', 'Confirmed': 'ok', 'Pending': 'warn', 'Payment Pending': 'warn' }[s] || 'info');
+
+/* ---------- table w/ search + pagination ---------- */
+function table(cols, rows, actions, per = 15) {
+  let q = '', pg = 0, filt = '';
+  const host = document.createElement('div');
+  function draw() {
+    const f = rows.filter(r => (!q || JSON.stringify(r).toLowerCase().includes(q)) && (!filt || Object.values(r).includes(filt)));
+    const pages = Math.max(1, Math.ceil(f.length / per)); if (pg >= pages) pg = pages - 1;
+    const slice = f.slice(pg * per, pg * per + per);
+    host.querySelector('.tb').innerHTML = slice.length ? '<div class="scroll"><table><thead><tr>' + cols.map(c => '<th>' + esc(c.l) + '</th>').join('') + (actions ? '<th></th>' : '') + '</tr></thead><tbody>' +
+      slice.map((r, i) => '<tr>' + cols.map(c => '<td>' + (c.f ? c.f(r) : esc(r[c.k])) + '</td>').join('') + (actions ? '<td>' + actions(r, rows.indexOf(r)) + '</td>' : '') + '</tr>').join('') + '</tbody></table></div>' +
+      '<div class="pager"><button class="btn s" data-pg="-1" ' + (pg === 0 ? 'disabled' : '') + '>Prev</button>Page ' + (pg + 1) + ' / ' + pages + ' · ' + f.length + ' rows<button class="btn s" data-pg="1" ' + (pg >= pages - 1 ? 'disabled' : '') + '>Next</button></div>' : '<div class="empty">No matching records.</div>';
+  }
+  const statuses = [...new Set(rows.flatMap(r => [r.status, r.paymentStatus, r.active, r.published, r.visible]).filter(Boolean))];
+  host.innerHTML = '<div class="bar"><input type="search" placeholder="Search…" aria-label="Search"><select aria-label="Filter"><option value="">All</option>' + statuses.map(s => '<option>' + esc(s) + '</option>').join('') + '</select></div><div class="tb"></div>';
+  host.querySelector('input').oninput = e => { q = e.target.value.toLowerCase(); pg = 0; draw(); };
+  host.querySelector('select').onchange = e => { filt = e.target.value; pg = 0; draw(); };
+  host.addEventListener('click', e => { const b = e.target.closest('[data-pg]'); if (b) { pg += Number(b.dataset.pg); draw(); } });
+  draw(); return host;
+}
+function csv(rows, name) {
+  if (!rows.length) { toast('Nothing to export.', 'err'); return; }
+  const k = Object.keys(rows[0]); const cell = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+  const b = new Blob([k.join(',') + '\n' + rows.map(r => k.map(x => cell(r[x])).join(',')).join('\n')], { type: 'text/csv' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = name + '.csv'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+/* ---------- Dashboard ---------- */
+async function vDash() {
+  const s = await call('admin_stats');
+  const T = [['Abstracts', s.abstracts], ['Pending review', s.pending], ['Shortlisted', s.shortlisted], ['Not shortlisted', s.notShortlisted], ['Registrations', s.registrations], ['Paid', s.paid], ['Confirmed', s.confirmed], ['Revenue verified (₹)', s.revenue]];
+  $('#view').innerHTML = '<div class="stats">' + T.map(t => '<div class="card stat"><b>' + esc(t[1]) + '</b><span>' + esc(t[0]) + '</span></div>').join('') + '</div>';
+}
+
+/* ---------- Abstracts ---------- */
+async function vAbs() {
+  const rows = await call('admin_list', { sheet: 'Abstracts' });
+  const host = table([{ l: 'Ref', k: 'ref' }, { l: 'Team', k: 'teamName' }, { l: 'Title', k: 'title' }, { l: 'Domain', k: 'domain' }, { l: 'Status', f: r => '<span class="badge ' + stCls(r.status) + '">' + esc(r.status) + '</span>' }],
+    rows, (r, i) => '<button class="btn s" data-open="' + i + '">Review</button>');
+  $('#view').innerHTML = '<div class="bar"><button class="btn s" id="ex">Export CSV</button></div>'; $('#view').appendChild(host);
+  $('#ex').onclick = () => csv(rows.map(r => { const c = Object.assign({}, r); delete c.diagramFileId; delete c.pdfFileId; return c; }), 'abstracts');
+  host.addEventListener('click', e => { const b = e.target.closest('[data-open]'); if (b) reviewAbs(rows[b.dataset.open]); });
+}
+async function loadFile(id, el, label) {
+  el.textContent = 'Loading ' + label + '…';
+  try {
+    const f = await call('admin_getFile', { id });
+    if (f.mime.startsWith('image/')) el.innerHTML = '<img alt="' + esc(label) + '" style="max-width:100%;border-radius:10px;background:#000" src="data:' + esc(f.mime) + ';base64,' + f.data + '">';
+    else { const a = document.createElement('a'); a.className = 'btn s'; a.textContent = 'Download ' + label; a.href = 'data:' + f.mime + ';base64,' + f.data; a.download = label + '.pdf'; el.textContent = ''; el.appendChild(a); }
+  } catch (e) { el.textContent = 'Unable to load file: ' + e.message; }
+}
+function reviewAbs(r) {
+  openModal('<h2 style="margin-bottom:8px">' + esc(r.teamName) + '</h2><p style="color:var(--mute)">' + esc(r.ref) + ' · ' + esc(r.leaderEmail) + '</p><h3 style="margin-top:12px">' + esc(r.title) + '</h3><p style="color:var(--mute)">' + esc(r.domain) + '</p>' +
+    '<h3 style="margin:12px 0 4px;font-size:.9rem">Abstract</h3><div class="pre">' + esc(r.abstract) + '</div><p><b>Keywords:</b> ' + esc(r.keywords) + '</p>' +
+    '<h3 style="margin:12px 0 4px;font-size:.9rem">Block diagram</h3><div id="fD"></div>' + (r.pdfFileId ? '<h3 style="margin:12px 0 4px;font-size:.9rem">PDF</h3><div id="fP"></div>' : '') +
+    '<div class="fld" style="margin-top:14px"><label for="note">Internal note</label><input id="note" maxlength="300" value="' + esc(r.note) + '"></div>' +
+    '<div class="bar"><button class="btn p" data-s="Shortlisted">Shortlist</button><button class="btn d" data-s="Not Shortlisted">Not shortlisted</button><button class="btn" data-s="Pending Review">Reset to pending</button><button class="btn" data-close>Close</button></div>');
+  loadFile(r.diagramFileId, $('#fD'), 'block diagram'); if (r.pdfFileId) loadFile(r.pdfFileId, $('#fP'), 'abstract');
+  $('#mbox').onclick = async e => {
+    const b = e.target.closest('[data-s]'); if (!b) return;
+    if (!confirmBox('Set "' + r.teamName + '" to "' + b.dataset.s + '"?')) return;
+    try { await call('admin_setAbstractStatus', { ref: r.ref, status: b.dataset.s, note: $('#note').value }); toast('Status updated.', 'ok'); closeModal(); go('Abstracts'); } catch (err) { toast(err.message, 'err'); }
+  };
+}
+
+/* ---------- Registrations ---------- */
+async function vReg() {
+  const rows = await call('admin_list', { sheet: 'Registrations' });
+  const host = table([{ l: 'Reg ID', k: 'regId' }, { l: 'Team', k: 'teamName' }, { l: 'Leader', f: r => esc(r.leaderName) + '<br><small style="color:var(--mute)">' + esc(r.leaderPhone) + '</small>' }, { l: 'Members', k: 'participants' }, { l: 'Amount', f: r => '₹' + esc(r.amount) },
+    { l: 'Payment', f: r => '<span class="badge ' + stCls(r.paymentStatus) + '">' + esc(r.paymentStatus) + '</span>' }, { l: 'Status', f: r => '<span class="badge ' + stCls(r.status) + '">' + esc(r.status) + '</span>' }],
+    rows, (r, i) => '<button class="btn s" data-open="' + i + '">Manage</button>');
+  $('#view').innerHTML = '<div class="bar"><button class="btn s" id="ex">Export CSV</button></div>'; $('#view').appendChild(host);
+  $('#ex').onclick = () => csv(rows, 'registrations');
+  host.addEventListener('click', e => { const b = e.target.closest('[data-open]'); if (b) manageReg(rows[b.dataset.open]); });
+}
+function manageReg(r) {
+  openModal('<h2>' + esc(r.teamName) + '</h2><p style="color:var(--mute)">' + esc(r.regId) + ' · ref ' + esc(r.ref) + '</p>' +
+    '<div class="pre">Leader: ' + esc(r.leaderName) + ' (' + esc(r.leaderEmail) + ', ' + esc(r.leaderPhone) + ')\nReference mobile: ' + esc(r.refPhone) + '\nCollege: ' + esc(r.college) + ' · ' + esc(r.year) + ' · ' + esc(r.department) + ' · ' + esc(r.state) + '\nParticipants (' + esc(r.participants) + '): ' + [r.leaderName, r.p2, r.p3, r.p4].filter(Boolean).map(esc).join(', ') + '\nAmount due: ₹' + esc(r.amount) + '</div>' +
+    '<div class="fld"><label for="pref">Payment reference / note (verified from your payment records)</label><input id="pref" maxlength="80" value="' + esc(r.paymentRef) + '"></div>' +
+    '<div class="bar"><button class="btn p" data-a="paid">Mark payment verified</button><button class="btn" data-a="unpaid">Mark payment pending</button><button class="btn p" data-a="confirm" ' + (r.paymentStatus === 'Paid' ? '' : 'disabled') + '>Confirm registration</button><button class="btn" data-close>Close</button></div>');
+  $('#mbox').onclick = async e => {
+    const b = e.target.closest('[data-a]'); if (!b || b.disabled) return; const a = b.dataset.a;
+    if (!confirmBox(a === 'confirm' ? 'Confirm this registration?' : a === 'paid' ? 'Mark payment as verified for ₹' + r.amount + '?' : 'Set payment back to pending?')) return;
+    try {
+      if (a === 'confirm') await call('admin_confirmRegistration', { regId: r.regId });
+      else await call('admin_setPayment', { regId: r.regId, paymentStatus: a === 'paid' ? 'Paid' : 'Pending', paymentRef: $('#pref').value });
+      toast('Updated.', 'ok'); closeModal(); go('Registrations');
+    } catch (err) { toast(err.message, 'err'); }
+  };
+}
+
+/* ---------- Generic CRUD ---------- */
+const CRUD = {
+  Domains: { cols: [{ l: 'Order', k: 'order' }, { l: 'Title', k: 'title' }, { l: 'Description', k: 'description' }, { l: 'Active', k: 'active' }],
+    fields: [['title', 'Title', 'text'], ['description', 'Description', 'textarea'], ['order', 'Order (number)', 'number'], ['active', 'Active', 'bool']], blank: { order: '10', active: 'TRUE' }, hint: 'Nine default domains plus a tenth slot — add more any time. The abstract form only lists active domains.' },
+  Resources: { cols: [{ l: 'Order', k: 'order' }, { l: 'Title', k: 'title' }, { l: 'Link', k: 'url' }, { l: 'Published', k: 'published' }],
+    fields: [['title', 'Title (e.g. Official Event Brochure)', 'text'], ['description', 'Description', 'textarea'], ['url', 'Link (https:// Google Drive share link or approved URL)', 'text'], ['order', 'Order (number)', 'number'], ['published', 'Published', 'bool']], blank: { order: '1', published: 'FALSE' }, hint: 'Only published resources with real https links appear on the public site.' },
+  Leaderboard: { cols: [{ l: 'Rank', k: 'rank' }, { l: 'Team', k: 'team' }, { l: 'Project', k: 'project' }, { l: 'Score', k: 'score' }, { l: 'Visible', k: 'visible' }],
+    fields: [['team', 'Team', 'text'], ['project', 'Project title', 'text'], ['domain', 'Domain', 'text'], ['score', 'Score', 'text'], ['rank', 'Rank (number)', 'number'], ['label', 'Achievement label (optional)', 'text'], ['visible', 'Visible', 'bool']], blank: { visible: 'TRUE' }, hint: 'The public leaderboard also requires "Publish leaderboard" in Settings.' },
+  Announcements: { cols: [{ l: 'Date', k: 'date' }, { l: 'Title', k: 'title' }, { l: 'Published', k: 'published' }],
+    fields: [['title', 'Title', 'text'], ['body', 'Message', 'textarea'], ['date', 'Date (YYYY-MM-DD)', 'text'], ['published', 'Published', 'bool']], blank: { published: 'TRUE' }, hint: 'The newest published announcement also appears as a banner.' }
+};
+async function vCrud(name) {
+  const cfg = CRUD[name]; const rows = await call('admin_list', { sheet: name });
+  if (name === 'Domains') rows.sort((a, b) => Number(a.order) - Number(b.order));
+  const host = table(cfg.cols, rows, (r, i) => '<button class="btn s" data-e="' + i + '">Edit</button> <button class="btn s d" data-x="' + i + '">Delete</button>');
+  $('#view').innerHTML = '<p style="color:var(--mute);margin-bottom:12px">' + esc(cfg.hint) + '</p><div class="bar"><button class="btn p" id="add">Add new</button></div>'; $('#view').appendChild(host);
+  $('#add').onclick = () => form(name, Object.assign({}, cfg.blank));
+  host.addEventListener('click', async e => {
+    const eb = e.target.closest('[data-e]'), xb = e.target.closest('[data-x]');
+    if (eb) form(name, rows[eb.dataset.e]);
+    if (xb) { const r = rows[xb.dataset.x]; if (!confirmBox('Delete "' + (r.title || r.team || r.id) + '"? This cannot be undone.')) return; try { await call('admin_remove', { sheet: name, id: r.id }); toast('Deleted.', 'ok'); go(name); } catch (err) { toast(err.message, 'err'); } }
+  });
+}
+function form(name, rec) {
+  const cfg = CRUD[name];
+  openModal('<h2 style="margin-bottom:12px">' + (rec.id ? 'Edit' : 'Add') + ' ' + esc(name.replace(/s$/, '')) + '</h2><form id="cf">' + cfg.fields.map(f => {
+    const v = rec[f[0]] || '', id = 'f_' + f[0];
+    const inp = f[2] === 'textarea' ? '<textarea id="' + id + '">' + esc(v) + '</textarea>' : f[2] === 'bool' ? '<select id="' + id + '"><option value="TRUE"' + (String(v).toUpperCase() === 'TRUE' ? ' selected' : '') + '>Yes</option><option value="FALSE"' + (String(v).toUpperCase() !== 'TRUE' ? ' selected' : '') + '>No</option></select>' : '<input id="' + id + '" type="' + f[2] + '" value="' + esc(v) + '">';
+    return '<div class="fld"><label for="' + id + '">' + esc(f[1]) + '</label>' + inp + '</div>';
+  }).join('') + '<div class="bar"><button class="btn p">Save</button><button type="button" class="btn" data-close>Cancel</button></div></form>');
+  $('#cf').onsubmit = async e => {
+    e.preventDefault(); const row = { id: rec.id }; cfg.fields.forEach(f => row[f[0]] = $('#f_' + f[0]).value);
+    if (name === 'Resources' && row.url && !/^https:\/\//i.test(row.url)) { toast('Link must start with https://', 'err'); return; }
+    try { await call('admin_upsert', { sheet: name, row }); toast('Saved.', 'ok'); closeModal(); go(name); } catch (err) { toast(err.message, 'err'); }
+  };
+}
+
+/* ---------- Settings ---------- */
+async function vSet() {
+  const c = await call('admin_getConfig');
+  const T = (k, l, h) => '<div class="fld"><label for="c_' + k + '">' + l + '</label><input id="c_' + k + '" value="' + esc(c[k]) + '">' + (h ? '<small>' + h + '</small>' : '') + '</div>';
+  const B = (k, l) => '<div class="fld"><label for="c_' + k + '">' + l + '</label><select id="c_' + k + '"><option value="TRUE"' + (String(c[k]).toUpperCase() === 'TRUE' ? ' selected' : '') + '>Yes</option><option value="FALSE"' + (String(c[k]).toUpperCase() !== 'TRUE' ? ' selected' : '') + '>No</option></select></div>';
+  $('#view').innerHTML = '<form class="card" id="sf" style="max-width:820px"><h3 style="margin-bottom:12px">Countdown</h3><div class="row2">' +
+    T('eventStart', 'Event start (ISO, IST)', 'Example: 2027-01-22T09:00:00+05:30') + '<div class="fld"><label for="c_timerMode">Timer mode</label><select id="c_timerMode">' + ['published', 'paused', 'hidden'].map(m => '<option' + (c.timerMode === m ? ' selected' : '') + '>' + m + '</option>').join('') + '</select></div></div>' +
+    B('timeConfirmed', 'Exact start time confirmed') + '<h3 style="margin:10px 0 12px">Event</h3><div class="row2">' + T('eventName', 'Event name') + T('eventDate', 'Event date (YYYY-MM-DD)') + T('abstractDeadline', 'Abstract deadline (ISO, IST)') + T('shortlistDate', 'Shortlist announcement (YYYY-MM-DD)') + T('feePerPerson', 'Fee per participant (₹)') + T('maxTeam', 'Max participants per team') + '</div>' +
+    '<div class="row2">' + B('registrationOpen', 'Team registration open') + B('abstractPdfEnabled', 'Allow optional abstract PDF') + B('leaderboardPublished', 'Publish leaderboard') + '</div>' +
+    '<h3 style="margin:10px 0 12px">Contact</h3>' + T('contactEmail', 'Official email') +
+    '<div class="fld"><label for="c_contacts">Coordinators override (JSON, optional)</label><textarea id="c_contacts" placeholder=\'{"students":[{"name":"…","phone":"+91 …"}],"faculty":["…"]}\'>' + esc(c.contacts) + '</textarea><small>Leave empty to use the built-in coordinator list.</small></div>' +
+    '<h3 style="margin:10px 0 12px">Payment (shown only to shortlisted teams)</h3><div class="fld"><label for="c_paymentInstructions">Payment instructions</label><textarea id="c_paymentInstructions">' + esc(c.paymentInstructions) + '</textarea><small>Add only real, verified payment details. Leave empty until ready.</small></div>' +
+    '<button class="btn p" id="sv">Save settings</button></form>';
+  $('#sf').onsubmit = async e => {
+    e.preventDefault();
+    const keys = ['eventStart', 'timerMode', 'timeConfirmed', 'eventName', 'eventDate', 'abstractDeadline', 'shortlistDate', 'feePerPerson', 'maxTeam', 'registrationOpen', 'abstractPdfEnabled', 'leaderboardPublished', 'contactEmail', 'contacts', 'paymentInstructions'];
+    const v = {}; keys.forEach(k => v[k] = $('#c_' + k).value.trim());
+    if (isNaN(new Date(v.eventStart))) { toast('Event start is not a valid date/time.', 'err'); return; }
+    if (isNaN(new Date(v.abstractDeadline))) { toast('Abstract deadline is not a valid date/time.', 'err'); return; }
+    if (!(Number(v.feePerPerson) > 0) || !(Number(v.maxTeam) >= 1 && Number(v.maxTeam) <= 10)) { toast('Check fee and team size values.', 'err'); return; }
+    if (v.contacts) { try { JSON.parse(v.contacts); } catch (x) { toast('Coordinators JSON is invalid.', 'err'); return; } }
+    if (!confirmBox('Save these settings? They update the public website immediately.')) return;
+    try { await call('admin_saveConfig', { values: v }); toast('Settings saved.', 'ok'); } catch (err) { toast(err.message, 'err'); }
+  };
+}
+
+/* ---------- Audit ---------- */
+async function vAudit() {
+  const rows = (await call('admin_list', { sheet: 'AuditLog' })).reverse();
+  $('#view').appendChild(table([{ l: 'Time', k: 'time' }, { l: 'Admin', k: 'admin' }, { l: 'Action', k: 'action' }, { l: 'Detail', k: 'detail' }], rows, null, 25));
+  $('#view').firstElementChild.remove();
+}
+
+if (TOKEN) { start(); }
+</script>
+</body>
+</html>
